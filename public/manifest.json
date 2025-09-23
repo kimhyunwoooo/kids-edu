@@ -1,0 +1,21 @@
+{
+    "name": "KidsEdu - 키즈 교육 플랫폼",
+    "short_name": "KidsEdu",
+    "description": "5-10세 아동을 위한 태블릿 최적화 교육 웹 서비스",
+    "start_url": "/",
+    "display": "fullscreen",
+    "orientation": "landscape",
+    "theme_color": "#FFB703",
+    "background_color": "#FFF8E7",
+    "icons": [
+        {
+            "src": "/icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": ["education", "kids", "learning"],
+    "lang": "ko",
+    "dir": "ltr"
+}

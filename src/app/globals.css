@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    * {
+        @apply border-gray-200;
+    }
+
+    body {
+        @apply bg-background text-gray-800 font-noto-rounded;
+        font-feature-settings: 'rlig' 1, 'calt' 1;
+        overflow: hidden; /* 풀스크린 모드 */
+        height: 100vh;
+        width: 100vw;
+    }
+
+    html {
+        height: 100%;
+        width: 100%;
+    }
+
+    #__next {
+        height: 100%;
+        width: 100%;
+    }
+}
+
+@layer components {
+    .btn-kids {
+        @apply min-h-[48px] px-6 py-3 rounded-2xl font-medium text-lg transition-all duration-200;
+        @apply active:scale-95 active:shadow-lg;
+        @apply focus:outline-none focus:ring-4 focus:ring-opacity-50;
+    }
+
+    .btn-primary {
+        @apply btn-kids bg-primary text-white hover:bg-accent shadow-lg;
+        @apply focus:ring-primary;
+    }
+
+    .btn-secondary {
+        @apply btn-kids bg-secondary text-white hover:bg-blue-400 shadow-lg;
+        @apply focus:ring-secondary;
+    }
+
+    .btn-success {
+        @apply btn-kids bg-success text-white hover:bg-green-500 shadow-lg;
+        @apply focus:ring-success;
+    }
+
+    .card-kids {
+        @apply bg-white rounded-3xl shadow-xl border-2 border-gray-100;
+        @apply transition-all duration-300 hover:shadow-2xl hover:scale-105;
+        @apply active:scale-95;
+    }
+
+    .input-kids {
+        @apply w-full px-4 py-3 rounded-2xl border-2 border-gray-200;
+        @apply focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary focus:ring-opacity-20;
+        @apply text-lg font-medium;
+        min-height: 48px;
+    }
+
+    .page-container {
+        @apply w-full h-full flex flex-col;
+    }
+
+    .content-area {
+        @apply flex-1 overflow-hidden;
+    }
+
+    .touch-target {
+        @apply min-h-[48px] min-w-[48px];
+    }
+
+    .bounce-animation {
+        animation: bounce-gentle 0.6s ease-in-out;
+    }
+
+    .fade-in {
+        animation: fade-in 0.3s ease-in-out;
+    }
+
+    .fade-out {
+        animation: fade-out 0.3s ease-in-out;
+    }
+}
+
+@layer utilities {
+    .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .text-shadow-lg {
+        text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+/* 키즈 친화적 스크롤바 */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #ffb703, #fb8500);
+    border-radius: 10px;
+    border: 2px solid #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, #fb8500, #ffb703);
+}
+
+/* 터치 디바이스 최적화 */
+@media (hover: none) and (pointer: coarse) {
+    .hover\:scale-105:hover {
+        transform: none;
+    }
+
+    .hover\:shadow-2xl:hover {
+        box-shadow: inherit;
+    }
+}
