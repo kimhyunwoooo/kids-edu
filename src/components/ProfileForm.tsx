@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { CreateProfileData, UpdateProfileData } from '@/types';
-import { Upload, User, Calendar } from 'lucide-react';
+import { Upload, User, Calendar, Loader2 } from 'lucide-react';
+import { uploadImage } from '@/lib/storage';
 
 interface ProfileFormProps {
     initialData?: Partial<CreateProfileData>;
@@ -19,6 +20,7 @@ export default function ProfileForm({ initialData = {}, onSubmit, onCancel, subm
         thumbnail_url: initialData.thumbnail_url || ''
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isUploading, setIsUploading] = useState(false);
 
     const validateForm = () => {
         const newErrors: Record<string, string> = {};
@@ -61,14 +63,17 @@ export default function ProfileForm({ initialData = {}, onSubmit, onCancel, subm
             return;
         }
 
+        setIsUploading(true);
+        setErrors(prev => ({ ...prev, thumbnail: '' }));
+
         try {
-            // TODO: Supabase Storage에 업로드
-            // 임시로 로컬 URL 생성
-            const url = URL.createObjectURL(file);
-            setFormData(prev => ({ ...prev, thumbnail_url: url }));
-            setErrors(prev => ({ ...prev, thumbnail: '' }));
+            // Supabase Storage에 업로드
+            const result = await uploadImage(file);
+            setFormData(prev => ({ ...prev, thumbnail_url: result.url }));
         } catch (error) {
             setErrors(prev => ({ ...prev, thumbnail: '파일 업로드에 실패했습니다' }));
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -81,9 +86,9 @@ export default function ProfileForm({ initialData = {}, onSubmit, onCancel, subm
                 <div className="text-center">
                     <div className="relative inline-block">
                         <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center overflow-hidden mb-4">{formData.thumbnail_url ? <img src={formData.thumbnail_url} alt="프로필 미리보기" className="w-full h-full object-cover" /> : <User className="w-12 h-12 text-white" />}</div>
-                        <label className="absolute bottom-0 right-0 bg-secondary text-white rounded-full p-2 cursor-pointer hover:bg-blue-500 transition-colors touch-target">
-                            <Upload className="w-5 h-5" />
-                            <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
+                        <label className={`absolute bottom-0 right-0 bg-secondary text-white rounded-full p-2 cursor-pointer hover:bg-blue-500 transition-colors touch-target ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                            {isUploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Upload className="w-5 h-5" />}
+                            <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" disabled={isUploading} />
                         </label>
                     </div>
                     {errors.thumbnail && <p className="text-red-500 text-sm mt-2">{errors.thumbnail}</p>}
