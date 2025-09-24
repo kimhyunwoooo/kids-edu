@@ -31,7 +31,25 @@ export default function GNB({ currentProfile }: GNBProps) {
             <div className="flex items-center justify-between">
                 {/* 프로필 정보 */}
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center overflow-hidden">{currentProfile.thumbnail_url ? <img src={currentProfile.thumbnail_url} alt={currentProfile.nickname} className="w-full h-full object-cover" /> : <User className="w-6 h-6 text-white" />}</div>
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center overflow-hidden">
+                        {currentProfile.thumbnail_url ? (
+                            <img
+                                src={currentProfile.thumbnail_url}
+                                alt={currentProfile.nickname}
+                                className="w-full h-full object-cover"
+                                key={currentProfile.thumbnail_url}
+                                onError={e => {
+                                    console.error('GNB 이미지 로드 실패:', currentProfile.thumbnail_url);
+                                    e.currentTarget.style.display = 'none';
+                                }}
+                                onLoad={() => {
+                                    console.log('GNB 이미지 로드 성공:', currentProfile.thumbnail_url);
+                                }}
+                            />
+                        ) : (
+                            <User className="w-6 h-6 text-white" />
+                        )}
+                    </div>
                     <div>
                         <h2 className="text-lg font-bold text-gray-800 font-baloo">{currentProfile.nickname}</h2>
                         <p className="text-sm text-gray-600">{currentProfile.age}세</p>

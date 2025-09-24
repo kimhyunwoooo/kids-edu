@@ -109,6 +109,29 @@ NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
+#### 프로필 이미지 설정 (중요!)
+
+프로필 이미지가 정상적으로 표시되지 않는 경우:
+
+1. **Storage 버킷 확인**: Supabase 대시보드 > Storage에서 `profile-images` 버킷이 생성되었는지 확인
+2. **Storage 정책 확인**: 버킷의 정책이 공개 읽기로 설정되어 있는지 확인
+3. **환경 변수 확인**: `.env.local` 파일의 Supabase URL과 키가 올바른지 확인
+4. **브라우저 콘솔 확인**: 개발자 도구 콘솔에서 이미지 로딩 관련 오류 메시지 확인
+
+#### Storage 정책 수동 설정 (필요시)
+
+Supabase 대시보드 > Storage > Policies에서 다음 정책들을 수동으로 추가:
+
+```sql
+-- 프로필 이미지 읽기 허용
+CREATE POLICY "프로필 이미지 읽기 허용" ON storage.objects
+  FOR SELECT USING (bucket_id = 'profile-images');
+
+-- 프로필 이미지 업로드 허용
+CREATE POLICY "프로필 이미지 업로드 허용" ON storage.objects
+  FOR INSERT WITH CHECK (bucket_id = 'profile-images');
+```
+
 ### 3. 개발 서버 실행
 
 ```bash

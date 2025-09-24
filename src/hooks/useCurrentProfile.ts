@@ -26,12 +26,31 @@ export function useCurrentProfile() {
     }, []);
 
     const setProfile = (profile: Profile | null) => {
+        console.log('useCurrentProfile - 프로필 설정:', {
+            이전프로필: currentProfile
+                ? {
+                      id: currentProfile.id,
+                      nickname: currentProfile.nickname,
+                      thumbnail_url: currentProfile.thumbnail_url
+                  }
+                : null,
+            새프로필: profile
+                ? {
+                      id: profile.id,
+                      nickname: profile.nickname,
+                      thumbnail_url: profile.thumbnail_url
+                  }
+                : null
+        });
+
         setCurrentProfile(profile);
         if (typeof window !== 'undefined') {
             if (profile) {
                 localStorage.setItem(CURRENT_PROFILE_KEY, JSON.stringify(profile));
+                console.log('useCurrentProfile - 로컬 스토리지에 프로필 저장 완료');
             } else {
                 localStorage.removeItem(CURRENT_PROFILE_KEY);
+                console.log('useCurrentProfile - 로컬 스토리지에서 프로필 제거 완료');
             }
         }
     };

@@ -11,7 +11,7 @@ import { Plus, Users, ArrowRight } from 'lucide-react';
 
 export default function IntroPage() {
     const router = useRouter();
-    const { profiles, loading, createProfile, deleteProfile } = useProfiles();
+    const { profiles, loading, createProfile, deleteProfile, updateProfile, refetch } = useProfiles();
     const { setProfile } = useCurrentProfile();
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [editingProfile, setEditingProfile] = useState<Profile | null>(null);
@@ -36,9 +36,39 @@ export default function IntroPage() {
     };
 
     const handleUpdateProfile = async (data: CreateProfileData | UpdateProfileData) => {
-        if (editingProfile) {
-            // TODO: 프로필 업데이트 로직 구현
-            setEditingProfile(null);
+        if (!editingProfile) return;
+
+        console.log('IntroPage - 프로필 업데이트 시작:', {
+            editingProfile: {
+                id: editingProfile.id,
+                nickname: editingProfile.nickname,
+                thumbnail_url: editingProfile.thumbnail_url
+            },
+            updateData: data
+        });
+
+        try {
+            const updatedProfile = await updateProfile(editingProfile.id, data as UpdateProfileData);
+            console.log('IntroPage - 프로필 업데이트 결과:', updatedProfile);
+
+            if (updatedProfile) {
+                console.log('IntroPage - 프로필 목록 새로고침');
+                await refetch();
+
+                // 현재 프로필이 수정 중인 프로필이라면 업데이트
+                const currentProfile = JSON.parse(localStorage.getItem('kidsedu_current_profile') || 'null');
+                if (currentProfile && currentProfile.id === editingProfile.id) {
+                    console.log('IntroPage - 현재 프로필 업데이트');
+                    setProfile(updatedProfile);
+                }
+
+                setEditingProfile(null);
+                console.log('IntroPage - 프로필 수정 완료');
+            } else {
+                console.error('IntroPage - 프로필 업데이트 실패');
+            }
+        } catch (error) {
+            console.error('IntroPage - 프로필 업데이트 오류:', error);
         }
     };
 
@@ -62,16 +92,16 @@ export default function IntroPage() {
         return (
             <div className="page-container bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20">
                 <div className="flex items-center justify-center h-full p-6">
-                    <ProfileForm 
+                    <ProfileForm
                         initialData={{
                             nickname: editingProfile.nickname,
                             age: editingProfile.age,
                             thumbnail_url: editingProfile.thumbnail_url || undefined
-                        }} 
-                        onSubmit={handleUpdateProfile} 
-                        onCancel={() => setEditingProfile(null)} 
-                        submitText="수정하기" 
-                        title="프로필 수정" 
+                        }}
+                        onSubmit={handleUpdateProfile}
+                        onCancel={() => setEditingProfile(null)}
+                        submitText="수정하기"
+                        title="프로필 수정"
                     />
                 </div>
             </div>
@@ -115,7 +145,7 @@ export default function IntroPage() {
 
                             <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto">
                                 {profiles.map(profile => (
-                                    <ProfileCard key={profile.id} profile={profile} onSelect={handleProfileSelect} onEdit={handleEditProfile} onDelete={handleDeleteProfile} showActions={true} />
+                                    <ProfileCard key={`${profile.id}-${profile.updated_at || profile.created_at}`} profile={profile} onSelect={handleProfileSelect} onEdit={handleEditProfile} onDelete={handleDeleteProfile} showActions={true} />
                                 ))}
                             </div>
                         </div>

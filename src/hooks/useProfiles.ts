@@ -39,6 +39,8 @@ export function useProfiles() {
 
     const updateProfile = async (id: string, updates: UpdateProfileData): Promise<Profile | null> => {
         try {
+            console.log('useProfiles - 프로필 업데이트 시작:', { id, updates });
+
             const { data, error } = await supabase
                 .from('profiles')
                 .update({ ...updates, updated_at: new Date().toISOString() })
@@ -46,11 +48,33 @@ export function useProfiles() {
                 .select()
                 .single();
 
-            if (error) throw error;
+            if (error) {
+                console.error('useProfiles - Supabase 업데이트 오류:', error);
+                throw error;
+            }
 
-            setProfiles(prev => prev.map(profile => (profile.id === id ? data : profile)));
+            console.log('useProfiles - Supabase 업데이트 성공:', data);
+            console.log('useProfiles - 업데이트된 프로필 데이터:', {
+                id: data.id,
+                nickname: data.nickname,
+                age: data.age,
+                thumbnail_url: data.thumbnail_url,
+                updated_at: data.updated_at
+            });
+
+            // 프로필 목록 업데이트
+            setProfiles(prev => {
+                const updatedProfiles = prev.map(profile => (profile.id === id ? data : profile));
+                console.log(
+                    'useProfiles - 프로필 목록 업데이트 완료:',
+                    updatedProfiles.map(p => ({ id: p.id, nickname: p.nickname, thumbnail_url: p.thumbnail_url }))
+                );
+                return updatedProfiles;
+            });
+
             return data;
         } catch (err) {
+            console.error('useProfiles - 프로필 업데이트 실패:', err);
             setError(err instanceof Error ? err.message : '프로필 수정에 실패했습니다.');
             return null;
         }
