@@ -6,7 +6,7 @@ import { useProfiles } from '@/hooks/useProfiles';
 import { useCurrentProfile } from '@/hooks/useCurrentProfile';
 import ProfileCard from '@/components/ProfileCard';
 import ProfileForm from '@/components/ProfileForm';
-import { Profile, CreateProfileData } from '@/types';
+import { Profile, CreateProfileData, UpdateProfileData } from '@/types';
 import { Plus, Users, ArrowRight } from 'lucide-react';
 
 export default function IntroPage() {
@@ -21,8 +21,8 @@ export default function IntroPage() {
         router.push('/main');
     };
 
-    const handleCreateProfile = async (data: CreateProfileData) => {
-        const newProfile = await createProfile(data);
+    const handleCreateProfile = async (data: CreateProfileData | UpdateProfileData) => {
+        const newProfile = await createProfile(data as CreateProfileData);
         if (newProfile) {
             setShowCreateForm(false);
             // 새로 생성된 프로필을 자동으로 선택
@@ -35,7 +35,7 @@ export default function IntroPage() {
         setEditingProfile(profile);
     };
 
-    const handleUpdateProfile = async (data: CreateProfileData) => {
+    const handleUpdateProfile = async (data: CreateProfileData | UpdateProfileData) => {
         if (editingProfile) {
             // TODO: 프로필 업데이트 로직 구현
             setEditingProfile(null);
@@ -62,7 +62,17 @@ export default function IntroPage() {
         return (
             <div className="page-container bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20">
                 <div className="flex items-center justify-center h-full p-6">
-                    <ProfileForm initialData={editingProfile} onSubmit={handleUpdateProfile} onCancel={() => setEditingProfile(null)} submitText="수정하기" title="프로필 수정" />
+                    <ProfileForm 
+                        initialData={{
+                            nickname: editingProfile.nickname,
+                            age: editingProfile.age,
+                            thumbnail_url: editingProfile.thumbnail_url || undefined
+                        }} 
+                        onSubmit={handleUpdateProfile} 
+                        onCancel={() => setEditingProfile(null)} 
+                        submitText="수정하기" 
+                        title="프로필 수정" 
+                    />
                 </div>
             </div>
         );

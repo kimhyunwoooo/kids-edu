@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useCurrentProfile } from '@/hooks/useCurrentProfile';
 import { useProfiles } from '@/hooks/useProfiles';
 import ProfileForm from '@/components/ProfileForm';
-import { CreateProfileData } from '@/types';
+import { CreateProfileData, UpdateProfileData } from '@/types';
 import { ArrowLeft, Save, Trash2 } from 'lucide-react';
 
 export default function ProfileSettingsPage() {
@@ -21,12 +21,12 @@ export default function ProfileSettingsPage() {
         }
     }, [currentProfile, profileLoading, router]);
 
-    const handleUpdateProfile = async (data: CreateProfileData) => {
+    const handleUpdateProfile = async (data: CreateProfileData | UpdateProfileData) => {
         if (!currentProfile) return;
 
         setIsUpdating(true);
         try {
-            const updatedProfile = await updateProfile(currentProfile.id, data);
+            const updatedProfile = await updateProfile(currentProfile.id, data as UpdateProfileData);
             if (updatedProfile) {
                 setProfile(updatedProfile);
                 router.push('/main');
@@ -122,7 +122,17 @@ export default function ProfileSettingsPage() {
                 {/* 프로필 수정 폼 */}
                 <div className="flex-1 overflow-y-auto p-6">
                     <div className="max-w-md mx-auto">
-                        <ProfileForm initialData={currentProfile} onSubmit={handleUpdateProfile} onCancel={handleCancel} submitText={isUpdating ? '저장 중...' : '저장하기'} title="프로필 수정" />
+                        <ProfileForm 
+                            initialData={{
+                                nickname: currentProfile.nickname,
+                                age: currentProfile.age,
+                                thumbnail_url: currentProfile.thumbnail_url || undefined
+                            }} 
+                            onSubmit={handleUpdateProfile} 
+                            onCancel={handleCancel} 
+                            submitText={isUpdating ? '저장 중...' : '저장하기'} 
+                            title="프로필 수정" 
+                        />
 
                         {/* 프로필 삭제 버튼 */}
                         <div className="mt-8 text-center">
